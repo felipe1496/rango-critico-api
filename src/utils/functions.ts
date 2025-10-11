@@ -1,4 +1,29 @@
-export const insert = (table: string) => {};
+import { PoolClient } from "pg";
+import { query } from "../db";
+import { where, Where } from "sql-js-builder";
+
+export const insert = <TData = any, TVariables extends object = any>(
+  table: string
+) => {
+  return (variables: TVariables, db?: PoolClient) => {
+    return query<TData>(
+      `INSERT INTO ${table} (${Object.keys(variables).join(
+        ", "
+      )}) VALUES (${Object.keys(variables)
+        .map(() => "?")
+        .join(", ")}) RETURNING *`,
+      Object.values(variables),
+      db
+    );
+  };
+};
+
+export const select = <TData = any>(table: string) => {
+  return (_where?: Where, db?: PoolClient) => {
+    const w = _where ? _where.build() : where().build();
+    return query<TData>(`SELECT * FROM ${table} WHERE ${w.sql};`, w.values, db);
+  };
+};
 
 export const replacePlaceholders = (query: string) => {
   let index = 0;

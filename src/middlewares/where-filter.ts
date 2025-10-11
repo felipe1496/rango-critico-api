@@ -1,6 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import z from "zod";
-import { BadRequestException } from "../exceptions/BadRequestException";
 import { Where, where } from "sql-js-builder";
 
 export const whereFilter = (
@@ -10,8 +8,8 @@ export const whereFilter = (
 ) => {
   const whereFilter = req.query.filter;
   let reqWhere: Where;
-  const page = req.query.page;
-  const perPage = req.query.per_page;
+  const page = Number(req.query.page) || 1;
+  const perPage = Number(req.query.per_page) || 200;
 
   if (!whereFilter) {
     reqWhere = where();
@@ -19,13 +17,11 @@ export const whereFilter = (
     reqWhere = where(whereFilter as string);
   }
 
-  if (page) {
-    reqWhere = reqWhere.page(Number(page));
-  }
+  reqWhere = reqWhere.offset((page - 1) * perPage);
+  reqWhere = reqWhere.limit(perPage + 1);
 
-  if (perPage) {
-    reqWhere = reqWhere.perPage(Number(perPage) + 1);
-  }
+  req.page = page;
+  req.per_page = perPage;
 
   req.whereFilter = reqWhere;
 

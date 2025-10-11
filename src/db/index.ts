@@ -28,10 +28,6 @@ export const query = async <TData = unknown>(
   );
 };
 
-pool.on("connect", () => {
-  console.log("Connected to the database");
-});
-
 pool.on("error", (err) => {
   console.error("Unexpected error on idle client", err);
   process.exit(-1);

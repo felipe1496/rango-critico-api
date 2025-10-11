@@ -7,14 +7,15 @@ export const restaurantsHandler = Router();
 
 restaurantsHandler.get("/", whereFilter, async (req, res) => {
   const restaurants = await RestaurantsService.list(req.whereFilter);
-  console.log(restaurants);
 
   return res.send({
     data: {
-      restaurants: restaurants.slice(0, req.whereFilter.perPageValue - 1),
+      restaurants: restaurants.slice(0, req.whereFilter.limitValue - 1),
     },
-    page: req.whereFilter.pageValue,
-    per_page: req.whereFilter.perPageValue,
-    next_page: restaurants.length > req.whereFilter.perPageValue - 1,
+    query: {
+      page: req.page,
+      per_page: req.per_page,
+      next_page: restaurants.length > req.per_page,
+    },
   });
 });

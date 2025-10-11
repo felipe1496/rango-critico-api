@@ -6,6 +6,7 @@ const save = async (data: {
   name: string;
   email: string;
   avatar_url?: string;
+  username: string;
 }) => {
   const response = await query<{
     id: string;
@@ -13,9 +14,10 @@ const save = async (data: {
     email: string;
     avatar_url?: string | null;
     created_at: string;
+    username: string;
   }>(
-    "INSERT INTO users (id, name, email, avatar_url) VALUES (?, ?, ?, ?) RETURNING *",
-    [ulid(), data.name, data.email, data.avatar_url || null]
+    "INSERT INTO users (id, name, email, avatar_url, username) VALUES (?, ?, ?, ?, ?) RETURNING *",
+    [ulid(), data.name, data.email, data.avatar_url || null, data.username]
   );
 
   return response;

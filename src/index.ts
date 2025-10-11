@@ -4,6 +4,8 @@ import { authHandler } from "./modules/auth/handler";
 import cors from "cors";
 import { AppException } from "./exceptions/AppException";
 import { restaurantsHandler } from "./modules/restaurants/handler";
+import { reviewsHandler } from "./modules/reviews/handler";
+import { NotFoundException } from "./exceptions/NotFoundException";
 
 const app = express();
 
@@ -15,6 +17,14 @@ app.use(
   })
 );
 
+app.use(`${env.API_PREFIX}/v1/auth`, authHandler);
+app.use(`${env.API_PREFIX}/v1/restaurants`, restaurantsHandler);
+app.use(`${env.API_PREFIX}/v1/reviews`, reviewsHandler);
+
+app.use(() => {
+  throw new NotFoundException("Route not found");
+});
+
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   if (err instanceof AppException) {
     console.error(err.message, err);
@@ -24,15 +34,12 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     console.error("Unknown error", err);
     return res.status(500).json({
       status: 500,
-      type: "Internal Server Error",
+      error: "Internal Server Error",
       message: "An uncaught error occurred",
     });
   }
 });
 
-app.use(`${env.API_PREFIX}/v1/auth`, authHandler);
-app.use(`${env.API_PREFIX}/v1/restaurants`, restaurantsHandler);
-
-app.listen(8080, () => {
-  console.log(`App listening on port ${8080}`);
+app.listen(env.API_PORT, () => {
+  console.log(`App listening on port ${env.API_PORT}`);
 });
