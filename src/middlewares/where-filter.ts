@@ -17,6 +17,11 @@ export const whereFilter = (
     reqWhere = where(whereFilter as string);
   }
 
+  if (req.query.sort) {
+    const order = req.query.order === "desc" ? "desc" : "asc";
+    reqWhere.orderBy(req.query.sort as string, order);
+  }
+
   reqWhere = reqWhere.offset((page - 1) * perPage);
   reqWhere = reqWhere.limit(perPage + 1);
 

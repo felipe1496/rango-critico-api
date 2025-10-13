@@ -6,6 +6,7 @@ import { AppException } from "./exceptions/AppException";
 import { restaurantsHandler } from "./modules/restaurants/handler";
 import { reviewsHandler } from "./modules/reviews/handler";
 import { NotFoundException } from "./exceptions/NotFoundException";
+import { profilesHandler } from "./modules/profiles/profilesHandler";
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(
 app.use(`${env.API_PREFIX}/v1/auth`, authHandler);
 app.use(`${env.API_PREFIX}/v1/restaurants`, restaurantsHandler);
 app.use(`${env.API_PREFIX}/v1/reviews`, reviewsHandler);
+app.use(`${env.API_PREFIX}/v1/profiles`, profilesHandler);
 
 app.use(() => {
   throw new NotFoundException("Route not found");

@@ -31,6 +31,7 @@ const find = (whereFilter?: Where) => {
     name: string;
     email: string;
     avatar_url?: string | null;
+    username: string;
     created_at: string;
   }>(`SELECT * FROM users WHERE ${sql}`, values);
 
