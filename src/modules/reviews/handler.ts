@@ -41,27 +41,19 @@ reviewsHandler.post(
   }
 );
 
-reviewsHandler.get("/", whereFilter, authGuard, async (req, res) => {
+reviewsHandler.get("/:username", whereFilter, authGuard, async (req, res) => {
   const filter = req.whereFilter;
+  const username = req.params.username;
 
-  if (filter.findConditions("username", ["eq"]).length) {
-    filter.remove("username");
-    const user = await UsersService.list(
-      where().and(
-        "username",
-        "eq",
-        filter.findConditions("username", ["eq"])[0].value
-      )
-    );
+  const user = await UsersService.list(where().and("username", "eq", username));
 
-    if (!user.length) {
-      throw new NotFoundException("User not found");
-    }
-
-    filter.and("review_user_id", "eq", user[0].id);
+  if (!user.length) {
+    throw new NotFoundException("User not found");
   }
 
-  const reviews = await ReviewsService.list(filter);
+  const reviews = await ReviewsService.list(
+    filter.and("review_user_id", "eq", user[0].id)
+  );
 
   return res.send({
     data: {
