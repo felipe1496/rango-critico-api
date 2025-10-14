@@ -1,6 +1,6 @@
+import z from "zod";
 import { Router } from "express";
 import { body } from "../../middlewares/body";
-import z from "zod";
 import { authGuard } from "../../middlewares/auth";
 import { ReviewsService } from "./service";
 import { reviewsPostBodySchema } from "./schemas";
@@ -8,6 +8,7 @@ import { where } from "sql-js-builder";
 import { whereFilter } from "../../middlewares/where-filter";
 import { UsersService } from "../users/service";
 import { NotFoundException } from "../../exceptions/NotFoundException";
+import l from "lodash";
 
 export const reviewsHandler = Router();
 
@@ -57,7 +58,9 @@ reviewsHandler.get("/:username", whereFilter, authGuard, async (req, res) => {
 
   return res.send({
     data: {
-      reviews: reviews.slice(0, req.whereFilter.limitValue - 1),
+      reviews: reviews
+        .slice(0, req.whereFilter.limitValue - 1)
+        .map((review) => ({ ...review, rating: l.toNumber(review.rating) })),
     },
     query: {
       page: req.page,

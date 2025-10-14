@@ -34,7 +34,7 @@ export const findDetail = select<{
   review_user_id: string;
   review_restaurant_id: string;
   review_comment?: string | null;
-  review_rating: number;
+  review_rating: string;
   review_visited_at: string;
   review_created_at: string;
   restaurant_id: string;
