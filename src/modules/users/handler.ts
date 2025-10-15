@@ -13,7 +13,6 @@ usersHandler.patch(
   authGuard,
   body(usersPatchBodySchema),
   async (req, res) => {
-    await new Promise((resolve) => setTimeout(resolve, 10 * 1000));
     const body = req.body as z.infer<typeof usersPatchBodySchema>;
 
     await UsersService.update(req.userId, body.data.user);
