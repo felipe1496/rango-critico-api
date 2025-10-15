@@ -1,6 +1,7 @@
 import { ulid } from "ulid";
 import { query } from "../../db";
 import { where, type Where } from "sql-js-builder";
+import { update as _update, update } from "../../utils/functions";
 
 const save = async (data: {
   name: string;
@@ -38,7 +39,13 @@ const find = (whereFilter?: Where) => {
   return response;
 };
 
+const modify = update<{
+  name?: string;
+  username?: string;
+}>("users");
+
 export const UsersRepository = {
   save,
   find,
+  modify,
 };

@@ -1,6 +1,7 @@
 import { PoolClient } from "pg";
 import { query } from "../db";
 import { where, Where } from "sql-js-builder";
+import l from "lodash";
 
 export const insert = <TData = any, TVariables extends object = any>(
   table: string
@@ -25,6 +26,20 @@ export const select = <TData = any>(table: string) => {
   };
 };
 
+export const update = <TVariables extends object>(table: string) => {
+  return (_where: Where, variables: TVariables, db?: PoolClient) => {
+    const w = _where.build();
+    console.log("aqui: ", Object.values(variables));
+    return query<void>(
+      `UPDATE ${table} SET ${Object.keys(variables)
+        .map((key) => `${key} = ?`)
+        .join(", ")} WHERE ${removeLimitOffset(w.sql)};`,
+      [...Object.values(variables), ...w.values.slice(0, -2)],
+      db
+    );
+  };
+};
+
 export const replacePlaceholders = (query: string) => {
   let index = 0;
   let insideQuotes = false;
@@ -41,4 +56,8 @@ export const replacePlaceholders = (query: string) => {
 
     return match; // Retorna o `?` como está, se estiver entre aspas
   });
+};
+
+export const removeLimitOffset = (txt: string) => {
+  return txt.replace(/\s+LIMIT\s+\?\s*(OFFSET\s+\?\s*)?$/i, "");
 };
