@@ -40,6 +40,28 @@ export const update = <TVariables extends object>(table: string) => {
   };
 };
 
+export const $delete = (table: string) => {
+  return (_where: Where, db?: PoolClient) => {
+    const w = _where.build();
+    return query<void>(
+      `DELETE FROM ${table} WHERE ${removeLimitOffset(w.sql)};`,
+      w.values.slice(0, -2),
+      db
+    );
+  };
+};
+
+export const $count = (table: string) => {
+  return (_where?: Where, db?: PoolClient) => {
+    const w = _where ? _where.build() : where().build();
+    return query<{ count: number }>(
+      `SELECT COUNT(*) AS count FROM ${table} WHERE ${w.sql};`,
+      w.values,
+      db
+    );
+  };
+};
+
 export const replacePlaceholders = (query: string) => {
   let index = 0;
   let insideQuotes = false;
