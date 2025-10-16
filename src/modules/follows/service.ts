@@ -130,34 +130,8 @@ const isFollowing = async (follower_id: string, followed_id: string) => {
   return !!response.data.length;
 };
 
-const followersCount = async (followed_id: string) => {
-  const response = await FollowsRepository.count(
-    where().and("followed_id", "eq", followed_id)
-  );
-
-  if (!response.ok) {
-    throw new InternalServerErrorException("Failed to check followers count");
-  }
-
-  return l.toNumber(response.data[0].count);
-};
-
-const followedCount = async (follower_id: string) => {
-  const response = await FollowsRepository.count(
-    where().and("follower_id", "eq", follower_id)
-  );
-
-  if (!response.ok) {
-    throw new InternalServerErrorException("Failed to check followed count");
-  }
-
-  return l.toNumber(response.data[0].count);
-};
-
 export const FollowsService = Object.freeze({
   follow,
   unfollow,
   isFollowing,
-  followersCount,
-  followedCount,
 });

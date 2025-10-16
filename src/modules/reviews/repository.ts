@@ -42,7 +42,7 @@ export const findDetail = select<{
   restaurant_description?: string | null;
   restaurant_avatar_url?: string | null;
   restaurant_created_at: string;
-}>("reviews_detail");
+}>("v_reviews_detail");
 
 export const ReviewsRepository = {
   save,
