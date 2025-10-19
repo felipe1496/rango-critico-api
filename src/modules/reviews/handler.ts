@@ -69,3 +69,27 @@ reviewsHandler.get("/:username", whereFilter, authGuard, async (req, res) => {
     },
   });
 });
+
+reviewsHandler.get(
+  "/:username/friends",
+  authGuard,
+  whereFilter,
+  async (req, res) => {
+    const filter = req.whereFilter.and("follower_id", "eq", req.userId);
+
+    const reviews = await ReviewsService.friendsReviews(filter);
+
+    return res.send({
+      data: {
+        reviews: reviews
+          .slice(0, req.whereFilter.limitValue - 1)
+          .map((review) => ({ ...review, rating: l.toNumber(review.rating) })),
+      },
+      query: {
+        page: req.page,
+        per_page: req.per_page,
+        next_page: reviews.length > req.per_page,
+      },
+    });
+  }
+);

@@ -54,7 +54,38 @@ export const list = async (whereFilter?: Where) => {
   }));
 };
 
+export const friendsReviews = async (whereFilter?: Where) => {
+  const reviewsResponse = await ReviewsRepository.friendsReviews(whereFilter);
+
+  if (!reviewsResponse.ok) {
+    throw new InternalServerErrorException("Failed to list reviews");
+  }
+
+  return reviewsResponse.data.map((review) => ({
+    id: review.review_id,
+    user_id: review.review_user_id,
+    restaurant_id: review.review_restaurant_id,
+    rating: review.review_rating,
+    comment: review.review_comment,
+    visited_at: review.review_visited_at,
+    created_at: review.review_created_at,
+    restaurant: {
+      id: review.restaurant_id,
+      name: review.restaurant_name,
+      description: review.restaurant_description,
+      avatar_url: review.restaurant_avatar_url,
+      created_at: review.restaurant_created_at,
+    },
+    followed: {
+      name: review.followed_name,
+      username: review.followed_username,
+      avatar_url: review.followed_avatar_url,
+    },
+  }));
+};
+
 export const ReviewsService = {
   create,
   list,
+  friendsReviews,
 };
